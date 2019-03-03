@@ -1,31 +1,42 @@
 <?php
-namespace frontend\modules\payum\storage;
 
+namespace yii\payum\storage;
+
+use LogicException;
 use Payum\Core\Storage\AbstractStorage;
-use Payum\Core\Storage\StorageInterface;
-
 use Payum\Core\Model\Identity;
 use yii\db\ActiveRecord;
+use yii\db\BaseActiveRecord;
 
+/**
+ * @property BaseActiveRecord $modelClass
+ */
 class ActiveRecordStorage extends AbstractStorage
 {
-
     /**
      * {@inheritDoc}
+     * 
+     * @param ActiveRecord $model
      */
     public function doUpdateModel($model)
     {
         $model->save();
     }
+
     /**
      * {@inheritDoc}
+     * 
+     * @param ActiveRecord $model
      */
     public function doDeleteModel($model)
     {
         $model->delete();
     }
+
     /**
      * {@inheritDoc}
+     * 
+     * @param ActiveRecord $model
      */
     public function doGetIdentity($model)
     {
@@ -34,18 +45,25 @@ class ActiveRecordStorage extends AbstractStorage
         }
         return new Identity($model->{$model->primaryKey()}, $model);
     }
+
     /**
      * {@inheritDoc}
      */
     public function doFind($id)
     {
-        return $this->className()->findOne($id);
+        return $this->modelClass->findOne($id);
     }
+
     /**
      * {@inheritDoc}
      */
     public function findBy(array $criteria)
     {
-        return $this->className()->findOne($criteria);
+        return $this->modelClass->findOne($criteria);
+    }
+
+    public function support($model)
+    {
+        return $model instanceof BaseActiveRecord && parent::support($model);
     }
 }

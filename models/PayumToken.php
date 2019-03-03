@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\modules\payum\models;
+namespace yii\payum\models;
 
 use Yii;
 use Payum\Core\Security\TokenInterface;

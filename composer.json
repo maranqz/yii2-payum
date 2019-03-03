@@ -1,0 +1,14 @@
+{
+  "name": "yii/payum",
+  "type": "library",
+  "description": "Yii2 module for integration Payum",
+  "require": {
+    "php": "^7.0",
+    "payum/payum": "~1.5.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "yii\\payum\\": ""
+    }
+  }
+}

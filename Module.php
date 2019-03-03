@@ -1,26 +1,46 @@
 <?php
-namespace frontend\modules\payum;
 
-use Payum\Core\PayumBuilder;
+namespace yii\payum;
+
+use Yii;
+use InvalidArgumentException;
 use Payum\Core\Payum;
-use frontend\modules\payum\storage\ActiveRecordStorage as ActiveRecordStorage;
+use yii\i18n\PhpMessageSource;
 
 class Module extends \yii\base\Module
 {
-
-    public $gateways;
+    /**
+     * @var Payum|callable
+     */
+    public $payum;
 
     public function init()
     {
-
-        foreach($this->gateways as $gateway){
-          $this->params[$gateway['gateway']] = (new PayumBuilder())
-              ->addDefaultStorages()
-              ->addGateway($gateway['gateway'], $gateway)
-              ->getPayum();
+        Yii::setAlias('@yii/payum', __DIR__);
+        if (empty($this->payum)) {
+            throw new InvalidArgumentException(sprintf(
+                'self::$payums should be set'
+            ));
         }
 
-        parent::init();
+        $this->registerTranslations();
+    }
 
+    public function getPayum()
+    {
+        if (is_callable($this->payum)) {
+            $this->payum = ($this->payum)();
+        }
+
+        return $this->payum;
+    }
+
+    private function registerTranslations()
+    {
+        Yii::$app->i18n->translations['yii/payum*'] = [
+            'class' => PhpMessageSource::className(),
+            'basePath' => __DIR__ . '/messages',
+            'sourceLanguage' => 'en-US',
+        ];
     }
 }
