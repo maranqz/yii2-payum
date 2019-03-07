@@ -43,7 +43,7 @@ class ActiveRecordStorage extends AbstractStorage
         if ($model->isNewRecord) {
             throw new LogicException('The model must be persisted before usage of this method');
         }
-        return new Identity($model->{$model->primaryKey()}, $model);
+        return new Identity($model->getPrimaryKey(), $model);
     }
 
     /**
@@ -51,7 +51,7 @@ class ActiveRecordStorage extends AbstractStorage
      */
     public function doFind($id)
     {
-        return $this->modelClass->findOne($id);
+        return ($this->modelClass)::findOne($id);
     }
 
     /**
@@ -59,7 +59,7 @@ class ActiveRecordStorage extends AbstractStorage
      */
     public function findBy(array $criteria)
     {
-        return $this->modelClass->findOne($criteria);
+        return ($this->modelClass)::findOne($criteria);
     }
 
     public function support($model)

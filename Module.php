@@ -37,10 +37,16 @@ class Module extends \yii\base\Module
 
     private function registerTranslations()
     {
-        Yii::$app->i18n->translations['yii/payum*'] = [
-            'class' => PhpMessageSource::className(),
-            'basePath' => __DIR__ . '/messages',
-            'sourceLanguage' => 'en-US',
-        ];
+        $app = Yii::$app;
+        if (!isset($app->i18n->translations['yii/payum*'])) {
+            $app->i18n->translations['yii/payum*'] = [
+                'class' => PhpMessageSource::className(),
+                'basePath' => __DIR__ . '/messages',
+                'sourceLanguage' => 'en-US',
+                'fileMap' => [
+                    'yii/payum' => 'payum.php'
+                ]
+            ];
+        }
     }
 }
