@@ -2,8 +2,10 @@
 
 namespace yii\payum\models;
 
+use Payum\Core\Model\PaymentInterface;
+use thamtech\uuid\helpers\UuidHelper;
+use thamtech\uuid\validators\UuidValidator;
 use Yii;
-use Payum\Core\Security\Util\Random;
 use yii\db\ActiveQuery;
 
 /**
@@ -13,6 +15,7 @@ use yii\db\ActiveQuery;
  * @property string $target_url
  * @property string $gateway_name
  * @property integer $details_id
+ * @property PaymentInterface $detailsQuery
  */
 trait PayumTokenTrait
 {
@@ -24,12 +27,17 @@ trait PayumTokenTrait
         return '{{%payum_token}}';
     }
 
+    public static function primaryKey()
+    {
+        return ['hash'];
+    }
+
     /**
      * {@inheritDoc}
      */
     public function init()
     {
-        $this->hash = Random::generateToken();
+        $this->hash = UuidHelper::uuid();
     }
 
     /**
@@ -38,11 +46,12 @@ trait PayumTokenTrait
     public function rules()
     {
         return [
-            [['user_id', 'details_id'], 'integer'],
-            [['hash', 'after_url', 'target_url'], 'string', 'max' => 255],
-            [['payment_name'], 'string', 'max' => 64],
-            ['after_url, target_url', 'safe'],
+            'hash' => [['hash'], UuidValidator::class],
 
+            'after_url' => [['after_url'], 'string', 'max' => 255],
+            'target_url' => [['target_url'], 'string', 'max' => 255],
+
+            'gateway_name' => [['gateway_name'], 'string', 'max' => 255],
         ];
     }
 
@@ -52,14 +61,17 @@ trait PayumTokenTrait
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'user_id' => 'User ID',
-            'hash' => 'Hash',
-            'payment_name' => 'Payment Name',
-            'after_url' => 'After Url',
-            'target_url' => 'Target Url',
-            'details_id' => 'Details ID',
+            'hash' => Yii::t('yii/payum', 'Hash'),
+            'after_url' => Yii::t('yii/payum', 'After url'),
+            'target_url' => Yii::t('yii/payum', 'Target url'),
+            'gateway_name' => Yii::t('yii/payum', 'Gateway name'),
+            'details' => Yii::t('yii/payum', 'Details'),
         ];
+    }
+
+    public function transactionId()
+    {
+        return $this->getPrimaryKey();
     }
 
     /**
@@ -73,11 +85,19 @@ trait PayumTokenTrait
     }
 
     /**
-     * @return ActiveQuery
+     * {@inheritDoc}
      */
     public function getDetails()
     {
-        return $this->hasOne(PayumPayment::className(), ['id' => 'details_id']);
+        return $this->detailsQuery;
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getDetailsQuery()
+    {
+        return $this->hasOne(PayumPayment::className(), ['number' => 'details_id']);
     }
 
     /**

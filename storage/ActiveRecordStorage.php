@@ -2,6 +2,7 @@
 
 namespace yii\payum\storage;
 
+use Throwable;
 use LogicException;
 use Payum\Core\Storage\AbstractStorage;
 use Payum\Core\Model\Identity;
@@ -15,7 +16,7 @@ class ActiveRecordStorage extends AbstractStorage
 {
     /**
      * {@inheritDoc}
-     * 
+     *
      * @param ActiveRecord $model
      */
     public function doUpdateModel($model)
@@ -25,8 +26,10 @@ class ActiveRecordStorage extends AbstractStorage
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @param ActiveRecord $model
+     *
+     * @throws Throwable
      */
     public function doDeleteModel($model)
     {
@@ -35,7 +38,7 @@ class ActiveRecordStorage extends AbstractStorage
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @param ActiveRecord $model
      */
     public function doGetIdentity($model)

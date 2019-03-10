@@ -4,9 +4,10 @@ use yii\payum\migrations\Migration;
 
 class m190306_231444_token extends Migration
 {
-    const PRIMARY_KEY = 'id';
+    const PRIMARY_KEY = 'number';
     const DETAILS_ID = 'details_id';
 
+    const IDX_HASH = 'idx-token-hash';
     const FK_TOKEN_PAYMENT = 'fk-token-payment';
 
     /**
@@ -15,13 +16,18 @@ class m190306_231444_token extends Migration
     public function safeUp()
     {
         $this->createTable($this->getTokenTable(), [
-            self::PRIMARY_KEY => $this->primaryKey(),
-            'hash' => $this->string()->notNull(),
+            'hash' => $this->char(36)->notNull(),
             'after_url' => $this->string()->null(),
             'target_url' => $this->string()->notNull(),
             'gateway_name' => $this->string()->notNull(),
             self::DETAILS_ID => $this->integer()->notNull(),
         ]);
+
+        $this->createIndex(
+            self::IDX_HASH,
+            $this->getTokenTable(),
+            self::PRIMARY_KEY
+        );
 
         $this->addForeignKey(
             self::FK_TOKEN_PAYMENT,
@@ -38,6 +44,7 @@ class m190306_231444_token extends Migration
      */
     public function safeDown()
     {
+        $this->dropIndex(self::IDX_HASH, $this->getTokenTable());
         $this->dropForeignKey(self::FK_TOKEN_PAYMENT, $this->getTokenTable());
         $this->dropTable($this->getTokenTable());
     }

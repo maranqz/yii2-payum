@@ -2,19 +2,18 @@
 
 namespace yii\payum\models;
 
-use Payum\Core\Model\CreditCardInterface;
 use Yii;
+use Payum\Core\Model\CreditCardInterface;
 use yii\db\ActiveQuery;
 
 /**
- * @property integer $id
  * @property string $number
  * @property string $description
  * @property string $client_email
  * @property string $client_id
  * @property float $total_amount
  * @property string $currency_code
- * @property array $details
+ * @property string $details
  * @property CreditCardInterface $credit_card
  */
 trait PayumPaymentTrait
@@ -33,38 +32,20 @@ trait PayumPaymentTrait
     public function rules()
     {
         return [
-            [
-                [
-                    'id',
-                    'number'
-                ], 'required'
-            ],
+            'description' => [['description'], 'string', 'max' => 255],
 
-            [
-                [
-                    'number'
-                ], 'required'
-            ],
-            [
-                [
-                    'number',
-                ], 'length', 'max' => 255
-            ],
+            'total_amount_number' => [['total_amount'], 'number', 'min' => 0.1],
+            'total_amount_required' => [['total_amount'], 'required'],
 
-            [
-                [
-                    'total_amount'
-                ], 'numerical', 'integerOnly' => true
-            ],
-            [
-                [
-                    'client_email',
-                    'client_id',
-                    'currency_code'
-                ], 'length', 'max' => 255
-            ],
-            'description_string' => [['description'], 'string'],
-            'description_length' => [['description'], 'length' => 255],
+            'client_email_string' => [['client_email'], 'string', 'max' => 255],
+            'client_email' => [['client_email'], 'email'],
+
+            'client_id' => [['client_id'], 'string', 'max' => 255],
+
+            'currency_code' => [['currency_code'], 'string', 'max' => 255],
+
+            'details' => [['details'], 'string'],
+            'details_default' => [['details'], 'default', 'value' => '{}'],
         ];
     }
 
@@ -74,13 +55,12 @@ trait PayumPaymentTrait
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'description' => 'Description',
-            'client_email' => 'Client Email',
-            'client_id' => 'Client ID',
-            'currency_code' => 'Currency Code',
-            'total_amount' => 'Total Amount',
-            'currency_digits_after_decimal_point' => 'Currency Digits After Decimal Point',
+            'number' => Yii::t('yii/payum', 'Number'),
+            'description' => Yii::t('yii/payum', 'Description'),
+            'client_email' => Yii::t('yii/payum', 'Client email'),
+            'client_id' => Yii::t('yii/payum', 'Client ID'),
+            'currency_code' => Yii::t('yii/payum', 'Currency code'),
+            'total_amount' => Yii::t('yii/payum', 'Total amount'),
         ];
     }
 
@@ -89,7 +69,7 @@ trait PayumPaymentTrait
      */
     public function getId()
     {
-        return $this->getPrimaryKey();
+        return $this->getNumber();
     }
 
     /**
@@ -178,10 +158,12 @@ trait PayumPaymentTrait
 
     /**
      * {@inheritDoc}
+     *
+     * Method not realized
      */
     public function getCreditCard()
     {
-        $this->credit_card;
+        return false;
     }
 
     /**
@@ -189,7 +171,7 @@ trait PayumPaymentTrait
      */
     public function getDetails()
     {
-        return $this->details;
+        return json_decode($this->details, true);
     }
 
     /**
@@ -199,11 +181,13 @@ trait PayumPaymentTrait
      */
     public function setDetails($details)
     {
+        $details = $details ?? [];
+
         if ($details instanceof \Traversable) {
             $details = iterator_to_array($details);
         }
 
-        $this->details = serialize($details);
+        $this->details = json_encode($details);
     }
 
     /**

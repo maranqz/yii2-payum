@@ -11,8 +11,7 @@ class m190306_231408_payment extends Migration
     public function safeUp()
     {
         $this->createTable($this->getPaymentTable(), [
-            'id' => $this->primaryKey(),
-            'number' => $this->string()->null(),
+            'number' => $this->primaryKey(),
             'description' => $this->string()->null(),
             'client_email' => $this->string()->null(),
             'client_id' => $this->string()->null(),
