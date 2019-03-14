@@ -50,7 +50,7 @@ class PrepareFreeKassa implements PreparePaymentInterface
 
     public function getGatewayName()
     {
-        return 'omnipay_freeKassa';
+        return 'FreeKassa';
     }
 
     public function getRequestKeys()
@@ -110,7 +110,12 @@ class PrepareFreeKassa implements PreparePaymentInterface
         $details['notifyUrl'] = $notifyToken->getTargetUrl();
         $details['notifyHash'] = $notifyToken->getHash();
         $details['doneUrl'] = $returnToken->getAfterUrl();
-        $details['doneHash'] = $returnToken->getHash();
+
+        $doneUrlQuery = null;
+        parse_str(parse_url($details['doneUrl'], PHP_URL_QUERY), $doneUrlQuery);
+
+        // TODO Bad idea, but the name of request parameter is constant
+        $details['doneHash'] = $doneUrlQuery['payum_token'];
 
         return $details;
     }

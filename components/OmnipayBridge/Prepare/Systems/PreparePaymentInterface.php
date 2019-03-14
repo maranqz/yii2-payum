@@ -11,6 +11,12 @@ use Payum\Core\Storage\StorageInterface;
 interface PreparePaymentInterface extends GenericTokenFactoryAwareInterface
 {
     /**
+     * @param StorageInterface $paymentStorage
+     * @return $this
+     */
+    public function setPaymentStorage(StorageInterface $paymentStorage);
+
+    /**
      * @param Convert $request
      * @return Convert $request
      */
@@ -26,10 +32,4 @@ interface PreparePaymentInterface extends GenericTokenFactoryAwareInterface
     public function getGatewayName();
 
     public function getRequestKeys();
-
-    /**
-     * @param StorageInterface $paymentStorage
-     * @return $this
-     */
-    public function setPaymentStorage(StorageInterface $paymentStorage);
 }
