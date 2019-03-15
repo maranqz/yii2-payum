@@ -3,13 +3,18 @@
 namespace yii\payum\components\OmnipayBridge\Action;
 
 use Payum\Core\Exception\RequestNotSupportedException;
-use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Request\GetHttpRequest;
+use yii\payum\components\OmnipayBridge\Prepare\PaymentSystemsInterface;
 use yii\payum\components\OmnipayBridge\Request\GetTokenHash;
 
-class GetTokenHashAction extends AbstractBridgeAction
+class GetTokenHashAction extends AbstractBridgeAction implements PaymentSystemsAwareInterface
 {
-    use GatewayAwareTrait;
+    use PaymentSystemsTrait;
+
+    public function __construct(PaymentSystemsInterface $paymentSystems)
+    {
+        $this->setPaymentSystems($paymentSystems);
+    }
 
     /**
      * {@inheritDoc}

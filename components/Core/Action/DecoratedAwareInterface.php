@@ -1,9 +1,6 @@
 <?php
-/**
- *
- */
 
-namespace yii\payum\components\OmnipayBridge\Action;
+namespace yii\payum\components\Core\Action;
 
 
 use Payum\Core\Action\ActionInterface;

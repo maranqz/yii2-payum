@@ -4,15 +4,22 @@ namespace yii\payum\components\OmnipayBridge\Action;
 
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareInterface;
-use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\Convert;
 use Payum\Core\Request\GetHttpRequest;
+use yii\payum\components\Core\Action\DecoratedAwareInterface;
+use yii\payum\components\Core\Action\DecoratedTrait;
+use yii\payum\components\OmnipayBridge\Prepare\PaymentSystemsInterface;
 
-class ConvertPaymentNullAction extends AbstractBridgeAction implements DecoratedAwareInterface, GatewayAwareInterface
+class ConvertPaymentNullAction extends AbstractBridgeAction implements DecoratedAwareInterface, PaymentSystemsAwareInterface, GatewayAwareInterface
 {
-    use GatewayAwareTrait;
     use DecoratedTrait;
+    use PaymentSystemsTrait;
+
+    public function __construct(PaymentSystemsInterface $paymentSystems)
+    {
+        $this->setPaymentSystems($paymentSystems);
+    }
 
     /**
      * {@inheritDoc}
