@@ -16,6 +16,8 @@ trait DecoratedTrait
      */
     private $decorated;
 
+    private $api;
+
     /**
      * {@inheritdoc}
      */
@@ -24,6 +26,14 @@ trait DecoratedTrait
         $this->decorated = $decorated;
 
         return $this;
+    }
+
+    public function setApi($api)
+    {
+        $decorated = $this->getDecorated();
+        if ($decorated instanceof ApiAwareInterface) {
+            $decorated->setApi($api);
+        }
     }
 
     /**
@@ -40,21 +50,6 @@ trait DecoratedTrait
     {
         if ($action instanceof GatewayAwareInterface) {
             $action->setGateway($this->gateway);
-        }
-
-        if ($action instanceof ApiAwareInterface) {
-            $apiSet = false;
-            $unsupportedException = null;
-            try {
-                $action->setApi($this->omnipayGateway);
-                $apiSet = true;
-            } catch (UnsupportedApiException $e) {
-                $unsupportedException = $e;
-            }
-
-            if (false == $apiSet) {
-                throw new LogicException(sprintf('Cannot find right api for the action %s', get_class($action)), null, $unsupportedException);
-            }
         }
     }
 }
